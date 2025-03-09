@@ -1,12 +1,19 @@
 #include <ArduLite.h>
 
 int main(){
-  Digital led(13, OUT);
+  PWM led(9);
 
   while(1){
-    led.on();
-    wait(1000);
-    led.off();
-    wait(1000);
+    
+    for(byte i = 0; i < 255; i++){
+      led.write(i);
+      wait(5);
+    }
+
+    for(byte i = 255; i > 0; i--){
+      led.write(i);
+      wait(5);
+    }
+    
   }
 }
