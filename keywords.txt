@@ -1,0 +1,11 @@
+ArduLite	KEYWORD1
+PWM	        KEYWORD1
+Digital	    KEYWORD1
+Analog	    KEYWORD1
+main	    KEYWORD1
+
+wait	    KEYWORD2
+testSpeed	KEYWORD2
+toggle	    KEYWORD2
+OUT	        KEYWORD2
+IN	        KEYWORD2
