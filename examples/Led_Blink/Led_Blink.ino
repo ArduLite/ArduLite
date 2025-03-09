@@ -1,15 +1,12 @@
 #include <ArduLite.h>
 
 int main(){
-  Digital button(2, IN);
   Digital led(13, OUT);
 
   while(1){
-    
-    if(!button.read()){
-      led.toggle();
-      wait(500);
-    }
-    
+    led.on();
+    wait(1000);
+    led.off();
+    wait(1000);
   }
 }
