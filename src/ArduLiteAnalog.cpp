@@ -12,17 +12,13 @@ Analog::Analog(uint8_t pin) {
         ADMUX |= (1 << REFS0);
     #endif
 
-    #if defined(ADPS2) && defined(ADPS1) && defined(ADPS0)
-        ADCSRA |= _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
-    #else
-        ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
-    #endif
-
     #if defined(ADEN)
         ADCSRA |= _BV(ADEN);
     #else
         ADCSRA |= (1 << ADEN);
     #endif
+
+    setPrescaler(64); // Default prescaler 64
 
     // Setup pin yang digunakan
     uint8_t channel = _pin;
@@ -56,4 +52,19 @@ uint16_t Analog::read() {
 
     while (ADCSRA & _BV(ADSC));
     return ADC;
+}
+
+void Analog::setPrescaler(uint8_t factor) {
+    ADCSRA &= ~(_BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0)); // Reset prescaler
+
+    switch (factor) {
+        case 2:  ADCSRA |= _BV(ADPS0); break;
+        case 4:  ADCSRA |= _BV(ADPS1); break;
+        case 8:  ADCSRA |= _BV(ADPS1) | _BV(ADPS0); break;
+        case 16: ADCSRA |= _BV(ADPS2); break;
+        case 32: ADCSRA |= _BV(ADPS2) | _BV(ADPS0); break;
+        case 64: ADCSRA |= _BV(ADPS2) | _BV(ADPS1); break;
+        case 128: ADCSRA |= _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); break;
+        default: ADCSRA |= _BV(ADPS2) | _BV(ADPS1); break; // Default ke 64 jika tidak valid
+    }
 }
