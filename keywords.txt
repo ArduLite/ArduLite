@@ -6,10 +6,14 @@ ArduLiteUART	KEYWORD1
 ArduLiteInterrupt	KEYWORD1
 ArduLiteTimerInterrupt	KEYWORD1
 uart	KEYWORD1
+DEBUG	KEYWORD1
 
 wait	KEYWORD2
 testSpeed	KEYWORD2
 toggle	KEYWORD2
+debug	KEYWORD2
+debugLine	KEYWORD2
+setPrescaler	KEYWORD2
 
 OUT	LITERAL1
 IN	LITERAL1

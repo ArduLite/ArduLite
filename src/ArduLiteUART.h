@@ -1,6 +1,14 @@
 #ifndef ARDULITE_UART_H
 #define ARDULITE_UART_H
 
+#ifdef DEBUG
+    #define debug(x) uart.send(x)
+    #define debugLine(x) uart.sendLine(x)    
+#else
+    #define debug(x)
+    #define debugLine(x)
+#endif
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>

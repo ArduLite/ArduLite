@@ -29,13 +29,13 @@ Digital::Digital(uint8_t pin, Direction dir) {
   //defined for ATmega8, ATmega16, ATmega32
   #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
     if (pin >= 0 && pin <= 7) {
-      // Pin is in PORTB (0-7)
-      DDRB |= (1 << pin);
+      // Pin is in PORTD (0-7) - Corrected from PORTB
+      DDRD |= (1 << pin);
     } else if (pin >= 8 && pin <= 13) {
-      // Pin is in PORTD (8-13)
-      DDRD |= (1 << (pin - 8));
-    } else if (pin >= 14 && pin <= 21) {
-      // Pin is in PORTC (A0-A7)
+      // Pin is in PORTB (8-13) - Corrected from PORTD
+      DDRB |= (1 << (pin - 8));
+    } else if (pin >= 14 && pin <= 19) { // Corrected range from 21 to 19
+      // Pin is in PORTC (A0-A5)
       DDRC |= (1 << (pin - 14));
     }
   #endif
@@ -62,13 +62,10 @@ Digital::Digital(uint8_t pin, Direction dir) {
 
   } else if (dir == IN) {
     if (pin >= 14 && pin <= 19) {
-      // Pin is in PORTC (A0-A5)
       DDRC &= ~(1 << (pin - 14));
     } else if (pin >= 8) {
-      // Pin is in PORTB (8-13)
       DDRB &= ~(1 << (pin - 8));
     } else {
-      // Pin is in PORTD (0-7)
       DDRD &= ~(1 << pin);
     }
   }
@@ -92,11 +89,11 @@ void Digital::on() {
   //defined for ATmega8, ATmega16, ATmega32
   #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
     if (pin >= 0 && pin <= 7) {
-      PORTB |= (1 << pin);  // Set pin HIGH on PORTB
+      PORTD |= (1 << pin);  // Corrected from PORTB
     } else if (pin >= 8 && pin <= 13) {
-      PORTD |= (1 << (pin - 8));  // Set pin HIGH on PORTD
-    } else if (pin >= 14 && pin <= 21) {
-      PORTC |= (1 << (pin - 14));  // Set pin HIGH on PORTC
+      PORTB |= (1 << (pin - 8));  // Corrected from PORTD
+    } else if (pin >= 14 && pin <= 19) { // Corrected range
+      PORTC |= (1 << (pin - 14));
     }
   #endif
 
@@ -114,14 +111,6 @@ void Digital::on() {
       PORTL |= (1 << (pin - 38));  // Set pin HIGH on PORTL
     }
   #endif
-
-  // if (pin >= 14 && pin <= 19) {
-  //   PORTC |= (1 << (pin - 14));  // Set pin HIGH on PORTC
-  // } else if (pin >= 8) {
-  //   PORTB |= (1 << (pin - 8));  // Set pin HIGH on PORTB
-  // } else {
-  //   PORTD |= (1 << pin);  // Set pin HIGH on PORTD
-  // }
 
 }
 
@@ -142,11 +131,11 @@ void Digital::off() {
   //defined for ATmega8, ATmega16, ATmega32
   #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
     if (pin >= 0 && pin <= 7) {
-      PORTB &= ~(1 << pin);  // Set pin LOW on PORTB
+      PORTD &= ~(1 << pin);  // Corrected from PORTB
     } else if (pin >= 8 && pin <= 13) {
-      PORTD &= ~(1 << (pin - 8));  // Set pin LOW on PORTD
-    } else if (pin >= 14 && pin <= 21) {
-      PORTC &= ~(1 << (pin - 14));  // Set pin LOW on PORTC
+      PORTB &= ~(1 << (pin - 8));  // Corrected from PORTD
+    } else if (pin >= 14 && pin <= 19) { // Corrected range
+      PORTC &= ~(1 << (pin - 14));
     }
   #endif
 
@@ -165,22 +154,14 @@ void Digital::off() {
     }
   #endif
 
-  // if (pin >= 14 && pin <= 19) {
-  //   PORTC &= ~(1 << (pin - 14));  // Set pin LOW on PORTC
-  // } else if (pin >= 8) {
-  //   PORTB &= ~(1 << (pin - 8));  // Set pin LOW on PORTB
-  // } else {
-  //   PORTD &= ~(1 << pin);  // Set pin LOW on PORTD
-  // }
-
 }
 
 // Function to write a value to the pin (HIGH/LOW)
 void Digital::write(bool value) {
   if (value) {
-    on();  // If true, turn the pin on
+    on();
   } else {
-    off(); // If false, turn the pin off
+    off();
   }
 }
 
@@ -190,49 +171,80 @@ void Digital::toggle() {
   //defined for ATmega48, ATmega88, ATmega168, ATmega328P, ATmega328PB
   #if defined(__AVR_ATmega48__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__)
     if (pin >= 14 && pin <= 19) {
-      PORTC ^= (1 << (pin - 14));  // Toggle pin on PORTC
+      PORTC ^= (1 << (pin - 14));
     } else if (pin >= 8) {
-      PORTB ^= (1 << (pin - 8));  // Toggle pin on PORTB
+      PORTB ^= (1 << (pin - 8));
     } else {
-      PORTD ^= (1 << pin);  // Toggle pin on PORTD
+      PORTD ^= (1 << pin);
     }
   #endif
 
   //defined for ATmega8, ATmega16, ATmega32
   #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
     if (pin >= 0 && pin <= 7) {
-      PORTB ^= (1 << pin);  // Toggle pin on PORTB
+      PORTD ^= (1 << pin);  // Corrected from PORTB
     } else if (pin >= 8 && pin <= 13) {
-      PORTD ^= (1 << (pin - 8));  // Toggle pin on PORTD
-    } else if (pin >= 14 && pin <= 21) {
-      PORTC ^= (1 << (pin - 14));  // Toggle pin on PORTC
+      PORTB ^= (1 << (pin - 8));  // Corrected from PORTD
+    } else if (pin >= 14 && pin <= 19) { // Corrected range
+      PORTC ^= (1 << (pin - 14));
     }
   #endif
 
   //defined for ATmega1280, ATmega2560
   #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
     if (pin >= 22 && pin <= 29) {
-      PORTA ^= (1 << (pin - 22));  // Toggle pin on PORTA
+      PORTA ^= (1 << (pin - 22));
     } else if (pin >= 0 && pin <= 7) {
-      PORTG ^= (1 << pin);  // Toggle pin on PORTG
+      PORTG ^= (1 << pin);
     } else if (pin >= 8 && pin <= 13) {
-      PORTH ^= (1 << (pin - 8));  // Toggle pin on PORTH
+      PORTH ^= (1 << (pin - 8));
     } else if (pin >= 14 && pin <= 21) {
-      PORTJ ^= (1 << (pin - 14));  // Toggle pin on PORTJ
+      PORTJ ^= (1 << (pin - 14));
     } else if (pin >= 38 && pin <= 41) {
-      PORTL ^= (1 << (pin - 38));  // Toggle pin on PORTL
+      PORTL ^= (1 << (pin - 38));
     }
   #endif
 
 }
 
-// Function to read the value from the pin
+// Function to read the pin state
 bool Digital::read() {
-  if (pin >= 14 && pin <= 19) {
-    return (PINC & (1 << (pin - 14))) != 0;  // Read value from PORTC
-  } else if (pin >= 8) {
-    return (PINB & (1 << (pin - 8))) != 0;  // Read value from PORTB
-  } else {
-    return (PIND & (1 << pin)) != 0;  // Read value from PORTD
-  }
+  // ATmega48, ATmega88, ATmega168, ATmega328P, ATmega328PB
+  #if defined(__AVR_ATmega48__) || defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__)
+    if (pin >= 14 && pin <= 19) {
+      return (PINC & (1 << (pin - 14))) != 0;
+    } else if (pin >= 8) {
+      return (PINB & (1 << (pin - 8))) != 0;
+    } else {
+      return (PIND & (1 << pin)) != 0;
+    }
+  #endif
+
+  // ATmega8, ATmega16, ATmega32
+  #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
+    if (pin >= 0 && pin <= 7) {
+      return (PIND & (1 << pin)) != 0;
+    } else if (pin >= 8 && pin <= 13) {
+      return (PINB & (1 << (pin - 8))) != 0;
+    } else if (pin >= 14 && pin <= 19) {
+      return (PINC & (1 << (pin - 14))) != 0;
+    }
+  #endif
+
+  // ATmega1280, ATmega2560
+  #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+    if (pin >= 22 && pin <= 29) {
+      return (PINA & (1 << (pin - 22))) != 0;
+    } else if (pin >= 0 && pin <= 7) {
+      return (PING & (1 << pin)) != 0;
+    } else if (pin >= 8 && pin <= 13) {
+      return (PINH & (1 << (pin - 8))) != 0;
+    } else if (pin >= 14 && pin <= 21) {
+      return (PINJ & (1 << (pin - 14))) != 0;
+    } else if (pin >= 38 && pin <= 41) {
+      return (PINL & (1 << (pin - 38))) != 0;
+    }
+  #endif
+
+  return false; // Default return false if no match found
 }

@@ -3,6 +3,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stdbool.h>  // Untuk tipe bool
 
 #define MAX_TIMERS 4
 
@@ -18,20 +19,26 @@ volatile static uint8_t timerCount = 0;
 
 void initTimerInterrupt() {
     cli();
-    
-    // Konfigurasi Timer2 untuk base time 1ms
-    TCCR2A = (1 << WGM21);   // CTC mode
-    TCCR2B = (1 << CS22) | (1 << CS21) | (1 << CS20); // Prescaler 1024
-    OCR2A = (F_CPU / 1024 / 1000) - 1; // 1ms interval
-    TIMSK2 |= (1 << OCIE2A);
-    
+    #if defined(__AVR_ATmega8__)
+        // Konfigurasi untuk ATmega8: Timer2 CTC mode dengan prescaler 1024
+        TCCR2 = (1 << WGM21) | (1 << CS22) | (1 << CS21) | (1 << CS20);
+        OCR2 = (F_CPU / 1024 / 1000) - 1;  // Interval 1ms
+        TIMSK |= (1 << OCIE2);
+    #elif defined(__AVR_ATmega328P__)
+        // Konfigurasi untuk ATmega328P: Timer2 CTC mode dengan prescaler 1024
+        TCCR2A = (1 << WGM21);
+        TCCR2B = (1 << CS22) | (1 << CS21) | (1 << CS20);
+        OCR2A = (F_CPU / 1024 / 1000) - 1;  // Interval 1ms
+        TIMSK2 |= (1 << OCIE2A);
+    #else
+        #error "Mikrokontroler tidak didukung"
+    #endif
     sei();
 }
 
 uint8_t createTimer(uint32_t intervalMs, void (*callback)()) {
-    if(timerCount >= MAX_TIMERS) return 255;
+    if (timerCount >= MAX_TIMERS) return 255;
     
-    // Inisialisasi manual tanpa designated initializer
     timers[timerCount].interval = intervalMs;
     timers[timerCount].counter = 0;
     timers[timerCount].callback = callback;
@@ -41,25 +48,29 @@ uint8_t createTimer(uint32_t intervalMs, void (*callback)()) {
 }
 
 void setTimerEnabled(uint8_t id, bool state) {
-    if(id < MAX_TIMERS) {
+    if (id < MAX_TIMERS) {
         timers[id].enabled = state;
     }
 }
 
 void setTimerInterval(uint8_t id, uint32_t newInterval) {
-    if(id < MAX_TIMERS) {
+    if (id < MAX_TIMERS) {
         timers[id].interval = newInterval;
         timers[id].counter = 0;
     }
 }
 
+#if defined(__AVR_ATmega8__)
+ISR(TIMER2_COMP_vect) {
+#elif defined(__AVR_ATmega328P__)
 ISR(TIMER2_COMPA_vect) {
-    for(uint8_t i = 0; i < timerCount; i++) {
-        if(timers[i].enabled) {
+#endif
+    for (uint8_t i = 0; i < timerCount; i++) {
+        if (timers[i].enabled) {
             timers[i].counter++;
-            if(timers[i].counter >= timers[i].interval) {
+            if (timers[i].counter >= timers[i].interval) {
                 timers[i].counter = 0;
-                if(timers[i].callback) timers[i].callback();
+                if (timers[i].callback) timers[i].callback();
             }
         }
     }

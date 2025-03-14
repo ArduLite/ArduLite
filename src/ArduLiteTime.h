@@ -4,9 +4,14 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-volatile uint32_t timer1_millis = 0;  // Ganti dari timer0_millis ke timer1_millis
+extern volatile uint32_t timer1_millis;
 
-ISR(TIMER1_COMPA_vect) {  
+uint32_t getTimeMs();
+void initTimer();
+
+volatile uint32_t timer1_millis = 0;
+
+ISR(TIMER1_COMPA_vect) {
     timer1_millis++;
 }
 
@@ -19,12 +24,26 @@ uint32_t getTimeMs() {
 }
 
 void initTimer() {
+    static bool timerInitialized = false; // Pastikan inisialisasi hanya sekali
+    if (timerInitialized) return;
+    timerInitialized = true;
+
     cli();
     
-    TCCR1B |= (1 << WGM12); // CTC Mode
-    OCR1A = 15624;          // 1 ms interrupt (dengan prescaler 64)
-    TCCR1B |= (1 << CS11) | (1 << CS10); // Prescaler 64
-    TIMSK1 |= (1 << OCIE1A); // Enable Timer1 Compare A Match Interrupt
+    TCCR1A = 0;
+    TCCR1B = 0;
+    
+    TCCR1B |= (1 << WGM12);
+    OCR1A = 249;
+    TCCR1B |= (1 << CS11) | (1 << CS10);
+    
+    #if defined(__AVR_ATmega8__)
+        TIMSK |= (1 << OCIE1A);
+    #elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
+        TIMSK1 |= (1 << OCIE1A);
+    #else
+        #error "Mikrokontroler tidak didukung"
+    #endif
 
     sei();
 }
