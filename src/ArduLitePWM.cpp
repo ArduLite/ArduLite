@@ -26,7 +26,7 @@ PWM::PWM(uint8_t pin) {
         case 11: // Timer2
             ocr = &OCR2; tccrA = &TCCR2; tccrB = &TCCR2;
             ddr = &DDRB; port = &PORTB; bit = PB3;
-            com = COM21; wgmA = WGM20; wgmB_tccrA = WGM21; cs = CS22;
+            com = COM21; wgmA = WGM20; wgmB_tccrB = WGM21; cs = CS22; // Diubah ke wgmB_tccrB
             break;
         default: return;
     }
@@ -39,17 +39,17 @@ PWM::PWM(uint8_t pin) {
         case 3:  // Timer2B
             ocr = &OCR2B; tccrA = &TCCR2A; tccrB = &TCCR2B;
             ddr = &DDRD; port = &PORTD; bit = PD3;
-            com = COM2B1; wgmA = WGM20; wgmB_tccrA = WGM21; cs = CS22;
+            com = COM2B1; wgmA = WGM20; wgmB_tccrB = WGM21; cs = CS22; // Diubah
             break;
         case 5:  // Timer0B
             ocr = &OCR0B; tccrA = &TCCR0A; tccrB = &TCCR0B;
             ddr = &DDRD; port = &PORTD; bit = PD5;
-            com = COM0B1; wgmA = WGM00; wgmB_tccrA = WGM01; cs = CS01;
+            com = COM0B1; wgmA = WGM00; wgmB_tccrB = WGM01; cs = CS01; // Diubah
             break;
         case 6:  // Timer0A
             ocr = &OCR0A; tccrA = &TCCR0A; tccrB = &TCCR0B;
             ddr = &DDRD; port = &PORTD; bit = PD6;
-            com = COM0A1; wgmA = WGM00; wgmB_tccrA = WGM01; cs = CS01;
+            com = COM0A1; wgmA = WGM00; wgmB_tccrB = WGM01; cs = CS01; // Diubah
             break;
         case 9:  // Timer1A
             ocr16 = &OCR1A; tccrA = &TCCR1A; tccrB = &TCCR1B;
@@ -64,7 +64,7 @@ PWM::PWM(uint8_t pin) {
         case 11: // Timer2A
             ocr = &OCR2A; tccrA = &TCCR2A; tccrB = &TCCR2B;
             ddr = &DDRB; port = &PORTB; bit = PB3;
-            com = COM2A1; wgmA = WGM20; wgmB_tccrA = WGM21; cs = CS22;
+            com = COM2A1; wgmA = WGM20; wgmB_tccrB = WGM21; cs = CS22; // Diubah
             break;
         default: return;
     }
@@ -105,12 +105,12 @@ PWM::PWM(uint8_t pin) {
         case 9:  // Timer2A
             ocr = &OCR2A; tccrA = &TCCR2A; tccrB = &TCCR2B;
             ddr = &DDRB; port = &PORTB; bit = PB4;
-            com = COM2A1; wgmA = WGM20; wgmB_tccrA = WGM21; cs = CS22;
+            com = COM2A1; wgmA = WGM20; wgmB_tccrB = WGM21; cs = CS22; // Diubah
             break;
         case 10: // Timer2B
             ocr = &OCR2B; tccrA = &TCCR2A; tccrB = &TCCR2B;
             ddr = &DDRB; port = &PORTB; bit = PB5;
-            com = COM2B1; wgmA = WGM20; wgmB_tccrA = WGM21; cs = CS22;
+            com = COM2B1; wgmA = WGM20; wgmB_tccrB = WGM21; cs = CS22; // Diubah
             break;
         case 11: // Timer1A
             ocr16 = &OCR1A; tccrA = &TCCR1A; tccrB = &TCCR1B;
@@ -125,7 +125,7 @@ PWM::PWM(uint8_t pin) {
         case 13: // Timer0A
             ocr = &OCR0A; tccrA = &TCCR0A; tccrB = &TCCR0B;
             ddr = &DDRB; port = &PORTB; bit = PB7;
-            com = COM0A1; wgmA = WGM00; wgmB_tccrA = WGM01; cs = CS01;
+            com = COM0A1; wgmA = WGM00; wgmB_tccrB = WGM01; cs = CS01; // Diubah
             break;
         default: return;
     }
@@ -138,7 +138,7 @@ PWM::PWM(uint8_t pin) {
         *tccrA |= (1 << com) | (1 << wgmA);
         *tccrB |= (1 << wgmB_tccrB) | (1 << cs);
     } else {     // 8-bit Timer
-        *tccrA |= (1 << com) | (1 << wgmA) | (1 << wgmB_tccrA);
+        *tccrA |= (1 << com) | (1 << wgmA) | (1 << wgmB_tccrB); // Diubah
         *tccrB |= (1 << cs);
     }
 
@@ -150,18 +150,14 @@ void PWM::write(uint8_t value) {
 
     if (value == 0) {
         // Matikan PWM dan set pin LOW
-        if (ocr16) *tccrA &= ~((1 << (com - 1)) | (1 << com)); // COM1A1/COM1B1
-        else *tccrA &= ~((1 << com) | (1 << (com - 1)));
-        *port &= ~(1 << bit);
-    } else if (value == 255) {
-        // Matikan PWM dan set pin HIGH
         if (ocr16) *tccrA &= ~((1 << (com - 1)) | (1 << com));
         else *tccrA &= ~((1 << com) | (1 << (com - 1)));
-        *port |= (1 << bit);
+        *port &= ~(1 << bit);
     } else {
         // Aktifkan PWM
         if (ocr16) *ocr16 = value;
         else if (ocr) *ocr = value;
-        *tccrA |= (1 << com) | (1 << (com - 1));
+        *tccrA |= (1 << com);
+        *tccrA &= ~(1 << (com - 1));  // Non-inverted mode
     }
 }

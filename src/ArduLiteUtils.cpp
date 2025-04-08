@@ -1,13 +1,5 @@
 #include "ArduLiteUtils.h"
 
-void wait(uint16_t seconds) {
-    while (seconds--) {
-        for (long i = 0; i < 2500; i++) {
-            asm(""); // NOP (No Operation) untuk delay
-        }
-    }
-}
-
 uint16_t testSpeed(uint8_t mode) {
     if (mode == 1) {
         TCCR1A = 0;

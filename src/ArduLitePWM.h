@@ -14,8 +14,7 @@ private:
     uint8_t bit;
     uint8_t com;
     uint8_t wgmA;
-    uint8_t wgmB_tccrA;
-    uint8_t wgmB_tccrB;
+    uint8_t wgmB_tccrB;  // Nama variabel yang benar
     uint8_t cs;
     bool initialized;
 
