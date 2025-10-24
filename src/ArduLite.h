@@ -19,6 +19,7 @@
 
 #include <util/delay.h>
 #define wait(x) _delay_ms(x)
+#define loop while(1)
 
 #include "ArduLiteDigital.h"
 #include "ArduLiteAnalog.h"
