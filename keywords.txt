@@ -12,6 +12,9 @@ bcdToDec	KEYWORD1
 decToBcd	KEYWORD1
 debug	KEYWORD1
 debugLine	KEYWORD1
+ArduLiteTime	KEYWORD1
+ArduLitePulse	KEYWORD1
+Pulse	KEYWORD1
 
 wait	KEYWORD2
 testSpeed	KEYWORD2
