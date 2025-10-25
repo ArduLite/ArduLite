@@ -19,7 +19,16 @@
 
 #include <util/delay.h>
 #define wait(x) _delay_ms(x)
+#define waitMicro(x) _delay_us(x)
+#define waitMicroSeconds(x) _delay_us(x)
 #define loop while(1)
+#define loop() while(1)
+#define activeLOW ACTIVE_OFF
+#define activeHIGH ACTIVE_ON
+#define ACTIVE_HIGH ACTIVE_ON
+#define ACTIVE_LOW ACTIVE_OFF
+#define activeON ACTIVE_ON
+#define activeOFF ACTIVE_OFF
 
 #include "ArduLiteDigital.h"
 #include "ArduLiteAnalog.h"
