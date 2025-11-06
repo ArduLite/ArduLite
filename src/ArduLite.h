@@ -21,8 +21,6 @@
 #define wait(x) _delay_ms(x)
 #define waitMicro(x) _delay_us(x)
 #define waitMicroSeconds(x) _delay_us(x)
-#define loop while(1)
-#define loop() while(1)
 #define activeLOW ACTIVE_OFF
 #define activeHIGH ACTIVE_ON
 #define ACTIVE_HIGH ACTIVE_ON
