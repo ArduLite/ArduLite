@@ -3,6 +3,10 @@
 #define ARDULITE_PULSE_H
 
 #include <avr/io.h>
+#include "ArduLiteTime.h"  // Include Time header
+
+// Deklarasi global time instance
+extern Time time;
 
 #define IN 0
 #define OUT 1
@@ -38,16 +42,6 @@ class Pulse {
       }
     }
     
-    void startTimer() {
-      TCCR1A = 0;
-      TCCR1B = (1 << CS11); // Prescaler 8
-      TCNT1 = 0;
-    }
-    
-    unsigned long getTicks() {
-      return TCNT1;
-    }
-    
     bool isHigh() {
       return (*_portReg & _mask) != 0;
     }
@@ -66,52 +60,48 @@ class Pulse {
     
     // Baca durasi pulse HIGH (dalam mikrodetik)
     unsigned long read() {
-      unsigned long maxTicks = _timeout * 2;
+      unsigned long maxTime = time.micros() + _timeout;
       
       // Tunggu LOW dulu
-      startTimer();
       while (isHigh()) {
-        if (getTicks() >= maxTicks) return 0;
+        if (time.micros() >= maxTime) return 0;
       }
       
       // Tunggu HIGH
-      startTimer();
       while (isLow()) {
-        if (getTicks() >= maxTicks) return 0;
+        if (time.micros() >= maxTime) return 0;
       }
       
       // Ukur durasi HIGH
-      startTimer();
+      unsigned long start = time.micros();
       while (isHigh()) {
-        if (getTicks() >= maxTicks) return 0;
+        if (time.micros() >= maxTime) return 0;
       }
       
-      return getTicks() / 2;
+      return time.micros() - start;
     }
     
     // Baca durasi pulse LOW
     unsigned long readLow() {
-      unsigned long maxTicks = _timeout * 2;
+      unsigned long maxTime = time.micros() + _timeout;
       
       // Tunggu HIGH dulu
-      startTimer();
       while (isLow()) {
-        if (getTicks() >= maxTicks) return 0;
+        if (time.micros() >= maxTime) return 0;
       }
       
       // Tunggu LOW
-      startTimer();
       while (isHigh()) {
-        if (getTicks() >= maxTicks) return 0;
+        if (time.micros() >= maxTime) return 0;
       }
       
       // Ukur durasi LOW
-      startTimer();
+      unsigned long start = time.micros();
       while (isLow()) {
-        if (getTicks() >= maxTicks) return 0;
+        if (time.micros() >= maxTime) return 0;
       }
       
-      return getTicks() / 2;
+      return time.micros() - start;
     }
     
     // Set timeout baru

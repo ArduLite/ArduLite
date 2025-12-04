@@ -39,6 +39,7 @@ public:
     void send(float data);
     void send(bool data);
     
+    void sendLine(char data);  // TAMBAHAN: Overload untuk char
     void sendLine(const char *str);
     void sendLine(int32_t data);
     void sendLine(uint32_t data);
@@ -232,6 +233,12 @@ void UART::send(bool data) {
     send_P(data ? trueStr : falseStr);
 }
 
+// TAMBAHAN: Implementasi sendLine untuk char
+void UART::sendLine(char data) {
+    send(data);
+    send_P(newLine);
+}
+
 void UART::sendLine(const char *str) {
     send(str);
     send_P(newLine);
@@ -309,6 +316,5 @@ void UART::send_P(const char *progmem_str) {
     ISR(USART3_RX_vect) { uart3.handleInterrupt(); }
     #endif
 #endif
-
 
 #endif

@@ -157,8 +157,4 @@ class Time {
     }
 };
 
-// Instance global dengan resolusi default (milidetik)
-extern Time time;
-Time time(MILLI);
-
 #endif

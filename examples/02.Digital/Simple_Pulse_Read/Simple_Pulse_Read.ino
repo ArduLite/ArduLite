@@ -5,19 +5,11 @@
 int main() {
   uart.begin(9600);
   Pulse echo(12, IN);
-  Digital trig(11, OUT);
-
-  while(1) {
-
-    trig.pulse(2, 10);
+  
+  while (1) {
     unsigned long duration = echo.read();
-    float distance = duration * 0.034002 / 2;
-
-    uart.send("Distance: ");
-    uart.send(distance);
-    uart.sendLine(" cm");
-
+    uart.sendLine(duration);
     wait(100);
   }
-
+  
 }
